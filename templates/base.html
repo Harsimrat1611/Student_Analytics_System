@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.navbar {
+    display: flex;
+    justify-content: center;
+    gap: 180px; /* pushes left & right */
+    align-items: center;
+    background-color: #2c3e50;
+    padding: 15px 30px;
+}
+
+/* LEFT */
+.nav-left a {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    margin-right: 180px;
+}
+
+/* CENTER */
+.nav-center {
+    display: flex;
+    gap: 240px;  /* spacing between middle items */
+}
+
+.nav-center a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* RIGHT */
+.nav-right a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 180px;
+}
+
+/* BUTTON STYLE */
+.navbar a {
+    background-color: #3498db;
+    padding: 8px 18px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+/* HOVER EFFECT */
+.navbar a:hover {
+    background-color: #1abc9c;
+    transform: scale(1.1);
+}
+</style>
+    <style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+}
+
+.navbar {
+    background: #2c3e50;
+    padding: 12px;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.container {
+    padding: 20px;
+}
+
+/* Cards */
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+/* Grid layout */
+.grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.small-card {
+    flex: 1;
+    text-align: center;
+    font-size: 18px;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+/* Colors */
+.avg { background: #e3f2fd; }
+.high { background: #d4edda; }
+.low { background: #f8d7da; }
+
+</style>
+    <title>Student Analytics</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <h1>📊 Smart Student Performance Analytics System</h1>
+    <div class="navbar">
+
+        <div class="nav-left">
+    <a href="/">Dashboard</a>
+    </div>
+    <div class="nav-center">
+    <a href="/add">Add Student</a>
+    <a href="/analytics">Analytics</a>
+    <a href="/report">Report</a>
+    </div>
+    <div class="nav-right">
+    <a href="{{ url_for('logout') }}">Logout</a>
+</div>
+</div>
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+</html>

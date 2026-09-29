@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Student Report</h2>
+
+<a href="/analytics">Back</a>
+
+<table border="1">
+<tr>
+<th>Name</th>
+<th>Math</th>
+<th>Science</th>
+<th>English</th>
+<th>Attendance</th>
+<th>Total</th>
+<th>Status</th>
+<th>Recommendation</th>
+</tr>
+
+{% for d in data %}
+<tr>
+<td>{{ d.name }}</td>
+<td>{{ d.math }}</td>
+<td>{{ d.science }}</td>
+<td>{{ d.english }}</td>
+<td>{{ d.attendance }}</td>
+<td>{{ d.total }}</td>
+
+<td>
+{% if d.topper == 1 %}
+Topper
+{% elif d.risk == 1 %}
+At Risk
+{% else %}
+Average
+{% endif %}
+</td>
+
+<td>{{ d.recommendation }}</td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

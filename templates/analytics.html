@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+<h2>Analytics</h2>
+<h3>📊 Summary Statistics</h3>
+<div class="grid">
+    <div class="small-card avg">📊 Avg: {{ avg }}</div>
+    <div class="small-card high">📈 Highest: {{ highest }}</div>
+    <div class="small-card low">📉 Lowest: {{ lowest }}</div>
+</div>
+<p><b>Average Marks:</b> {{ avg }}</p>
+<p><b>Highest Marks:</b> {{ highest }}</p>
+<p><b>Lowest Marks:</b> {{ lowest }}</p>
+<div style="display:flex; gap:20px;">
+
+<div style="padding:10px; background:#e3f2fd;">
+    Average: {{ avg }}
+</div>
+<div style="padding:10px; background:#d4edda;">
+    Highest: {{ highest }}
+</div>
+
+<div style="padding:10px; background:#f8d7da;">
+    Lowest: {{ lowest }}
+</div>
+
+</div>
+<br>
+<h3 style="text-align:center;">🏆 Top 5 Students</h3>
+
+<style>
+.top-table {
+    width: 60%;
+    margin: auto;
+    border-collapse: collapse;
+    text-align: center;
+    font-family: Arial;
+}
+
+.top-table th {
+    padding: 12px;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    color: white;
+}
+
+.top-table td {
+    padding: 12px;
+}
+
+.top-table tr {
+    transition: 0.3s;
+}
+
+.top-table tr:hover {
+    transform: scale(1.03);
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Medal colors */
+.gold {
+    background-color: #ffd700;
+    animation: glowGold 1.5s infinite alternate;
+}
+
+.silver {
+    background-color: #c0c0c0;
+}
+
+.bronze {
+    background-color: #cd7f32;
+}
+
+/* Glow animation for topper */
+@keyframes glowGold {
+    from { box-shadow: 0 0 5px #ffd700; }
+    to { box-shadow: 0 0 20px #ffcc00; }
+}
+</style>
+
+<table class="top-table">
+
+<tr>
+    <th>Rank</th>
+    <th>Name</th>
+    <th>Total Marks</th>
+</tr>
+
+{% for s in top_students %}
+<tr class="
+{% if loop.index == 1 %} gold
+{% elif loop.index == 2 %} silver
+{% elif loop.index == 3 %} bronze
+{% endif %}
+">
+
+<td>
+{% if loop.index == 1 %} 🥇
+{% elif loop.index == 2 %} 🥈
+{% elif loop.index == 3 %} 🥉
+{% else %} {{ loop.index }}
+{% endif %}
+</td>
+<td>{{ s.name }}</td>
+<td>{{ s.total }}</td>
+
+</tr>
+{% endfor %}
+
+</table>
+
+<br>
+
+<div style="text-align: center; margin-bottom: 15px;">
+    <a href="/export" style="padding:10px 15px; background:#28a745; color:white; border-radius:5px;">
+        Download Full Report
+    </a>
+</div>
+
+<table border="1">
+<tr><th>Name</th><th>Total</th><th>Risk</th><th>Status</th><th>Recommendation</th></tr>
+
+{% for d in data %}
+
+{% if d.topper == 1 %}
+<tr style="background-color: #d4edda;">
+{% elif d.risk == 1 %}
+<tr style="background-color: #f8d7da;">
+{% else %}
+<tr>
+{% endif %}
+
+<td>{{ d.name }}</td>
+<td>{{ d.total }}</td>
+<td>{{ 'At Risk' if d.risk==1 else 'Safe' }}</td>
+<td>
+    {% if d.topper == 1 %}
+    <span style="color:green;
+    font-weight:bold;">🏆 Topper</span>
+    {% elif d.risk == 1 %}
+    <span style="color:red;
+    font-weight:bold;">⚠️ At Risk</span>
+    {% else %}
+    <span style="color:blue;">Average</span>
+    {% endif %}
+</td>
+<td>{{ d.recommendation }}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<!-- ✅ OUTSIDE table -->
+<br>
+<div class="card"></div>
+<canvas id="myChart"></canvas>
+</div>
+<script id="chart-data" type="application/json">
+{{ data | tojson }}
+</script>
+<div class="chart">
+<canvas id="riskChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    const rawData = JSON.parse(document.getElementById("chart-data").textContent);
+
+    let labels = rawData.map(d => d.name);
+    let math = rawData.map(d => d.math);
+    let science = rawData.map(d => d.science);
+    let english = rawData.map(d => d.english);
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Math', data: math },
+                { label: 'Science', data: science },
+                { label: 'English', data: english }
+            ]
+        }
+    });
+
+});
+
+const ctx = document.getElementById('myChart').getContext('2d');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Math Marks',
+            data: math
+        },
+        {
+            label: 'Science Marks',
+            data: science
+        },
+        {
+            label: 'English Marks',
+            data: english
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100
+            }
+        }
+    }
+});
+</script>
+
+<script>
+const chartElement = document.getElementById("chart-data");
+
+if (chartElement) {
+    const rawData = JSON.parse(chartElement.textContent);
+
+    let riskCount = rawData.filter(d => d.risk == 1).length;
+    let safeCount = rawData.filter(d => d.risk == 0).length;
+
+    const ctx2 = document.getElementById('riskChart').getContext('2d');
+
+    new Chart(ctx2, {
+        type: 'pie',
+        data: {
+            labels: ['At Risk', 'Safe'],
+            datasets: [{
+                data: [riskCount, safeCount]
+            }]
+        }
+    });
+}
+</script>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+const rawData = JSON.parse(document.getElementById("chart-data").textContent);
+
+const hasTopper = rawData.some(d => d.topper == 1);
+
+if (hasTopper) {
+    setTimeout(() => {
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+    }, 800);
+}
+</script>
+{% endblock %}
